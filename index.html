@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex@3.0.1/dist/vuex.js"></script>
+
+    <!-- <script src="https://www.gstatic.com/firebasejs/5.3.1/firebase.js"></script> -->
+    <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-firestore.js"></script>
+
+
+    <script>
+      // Initialize Firebase
+      const config = {
+        apiKey: "AIzaSyDAx27-_XF2eM7wXiedd7goKm5p1fMONfs",
+        authDomain: "moms-shuffleboard.firebaseapp.com",
+        databaseURL: "https://moms-shuffleboard.firebaseio.com",
+        projectId: "moms-shuffleboard",
+        storageBucket: "moms-shuffleboard.appspot.com",
+        messagingSenderId: "154777839060"
+      };
+      firebase.initializeApp(config);
+    </script>
+
+    <script>
+      const firestore = firebase.firestore();
+      const settings = {/* your settings... */ timestampsInSnapshots: true};
+      firestore.settings(settings);
+
+      // firestore.collection("teams").get().then((querySnapshot) => {
+      firestore.collection("teams").onSnapshot((querySnapshot) => {
+        let teams = [];
+        querySnapshot.forEach((doc) => {
+            console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+            teams.push(doc.data());
+        });
+        console.log(teams);
+        store.commit('setTeams', teams);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <ul>
+        <li v-for="team in teams">
+          {{ team }}
+        </li>
+      </ul>
+    </div>
+  </body>
+
+  <script>
+    const store = new Vuex.Store({
+      state: {
+        teams: [
+          {a: 'b'},
+          {c: 'd'}
+        ]
+      },
+      mutations: {
+        setTeams(state, teams) { state.teams = teams; }
+        // increment (state) {
+        //   state.count++
+        // }
+      }
+    });
+
+    const app = new Vue({
+      el: '#app',
+      store: store,
+      computed: Vuex.mapState({
+        teams: 'teams'
+      })
+    });
+  </script>
+</html>
