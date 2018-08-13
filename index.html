@@ -1,12 +1,17 @@
+<!DOCTYPE html>
 <html>
   <head>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
     <script src="https://unpkg.com/vuex@3.0.1/dist/vuex.js"></script>
 
     <!-- <script src="https://www.gstatic.com/firebasejs/5.3.1/firebase.js"></script> -->
     <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-firestore.js"></script>
-
 
     <script>
       // Initialize Firebase
@@ -45,16 +50,20 @@
           {{ team }}
         </li>
       </ul>
+
+      <form v-on:submit.prevent="processForm">
+        <input type="text" placeholder="Team Name" v-model="form.id">
+        <input type="text" placeholder="First Team Member" v-model="form.member_1">
+        <input type="text" placeholder="Second Team Member" v-model="form.member_2">
+        <input type="submit">
+      </form>
     </div>
   </body>
 
   <script>
     const store = new Vuex.Store({
       state: {
-        teams: [
-          {a: 'b'},
-          {c: 'd'}
-        ]
+        teams: []
       },
       mutations: {
         setTeams(state, teams) { state.teams = teams; }
@@ -69,7 +78,30 @@
       store: store,
       computed: Vuex.mapState({
         teams: 'teams'
-      })
+      }),
+      data: {
+        form: {
+          id: '',
+          member_1: '',
+          member_2: ''
+        }
+      },
+
+      methods: {
+        processForm: function() {
+          console.log('processForm', this.form.id, this.form.member_1, this.form.member_2);
+
+          firestore.collection('teams').add({
+            id: this.form.id,
+            member_1: this.form.member_1,
+            member_2: this.form.member_2
+          }).then(ref => {
+            console.log('success', ref);
+          }, error => {
+            console.log('error', error);
+          });
+        }
+      }
     });
   </script>
 </html>
