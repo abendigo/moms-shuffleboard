@@ -36,7 +36,9 @@
         let teams = [];
         querySnapshot.forEach((doc) => {
             console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-            teams.push(doc.data());
+            teams.push(Object.assign({
+              did: doc.id
+            }, doc.data()));
         });
         console.log(teams);
         store.commit('setTeams', teams);
@@ -52,7 +54,6 @@
       </ul>
 
       <form v-on:submit.prevent="processForm">
-        <input type="text" placeholder="Team Name" v-model="form.id">
         <input type="text" placeholder="First Team Member" v-model="form.member_1">
         <input type="text" placeholder="Second Team Member" v-model="form.member_2">
         <input type="submit">
@@ -81,7 +82,6 @@
       }),
       data: {
         form: {
-          id: '',
           member_1: '',
           member_2: ''
         }
@@ -89,10 +89,9 @@
 
       methods: {
         processForm: function() {
-          console.log('processForm', this.form.id, this.form.member_1, this.form.member_2);
+          console.log('processForm', this.form.member_1, this.form.member_2);
 
           firestore.collection('teams').add({
-            id: this.form.id,
             member_1: this.form.member_1,
             member_2: this.form.member_2
           }).then(ref => {
