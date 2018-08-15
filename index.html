@@ -33,23 +33,33 @@
 
       // firestore.collection("teams").get().then((querySnapshot) => {
       firestore.collection("teams").onSnapshot((querySnapshot) => {
-        let teams = [];
+        let teams = {};
         querySnapshot.forEach((doc) => {
             console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-            teams.push(Object.assign({
-              did: doc.id
-            }, doc.data()));
+            teams[doc.id] = doc.data();
+            // teams.push(Object.assign({
+            //   did: doc.id
+            // }, doc.data()));
         });
         console.log(teams);
         store.commit('setTeams', teams);
       });
     </script>
+    <style>
+      table {
+          border-collapse: collapse;
+      }
+
+      table, th, td {
+          border: 1px solid black;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
       <ul>
         <li v-for="team in teams">
-          {{ team }}
+          {{ team }} <button v-on:click="onDelete(team.did)">delete</button>
         </li>
       </ul>
 
@@ -58,6 +68,32 @@
         <input type="text" placeholder="Second Team Member" v-model="form.member_2">
         <input type="submit">
       </form>
+
+      <button @click="generateSchedule">Generate Schedule</button>
+
+      <table style="border: 4px solid black;">
+        <thead>
+          <tr>
+            <th></th>
+            <th v-for="date in dates">{{date}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="timeslot in timeslots">
+            <td>{{timeslot}}</td>
+            <td v-for="date in dates">
+              <ul>
+                <li v-for="team in schedule[date][timeslot]">
+                  <ol>
+                    <li>{{ getTeam(team).member_1 }}</li>
+                    <li>{{ getTeam(team).member_2 }}</li>
+                  </ol>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </body>
 
@@ -68,9 +104,6 @@
       },
       mutations: {
         setTeams(state, teams) { state.teams = teams; }
-        // increment (state) {
-        //   state.count++
-        // }
       }
     });
 
@@ -84,6 +117,25 @@
         form: {
           member_1: '',
           member_2: ''
+        },
+        timeslots: ['13:00', '14:00', '15:00'],
+        dates: ['Sep 24', 'Oct 01', 'Oct 08'],
+        schedule: {
+          'Sep 24': {
+            '13:00': [],
+            '14:00': [],
+            '15:00': []
+          },
+          'Oct 01': {
+            '13:00': [],
+            '14:00': [],
+            '15:00': []
+          },
+          'Oct 08': {
+            '13:00': [],
+            '14:00': [],
+            '15:00': []
+          }
         }
       },
 
@@ -99,6 +151,59 @@
           }, error => {
             console.log('error', error);
           });
+        },
+        onDelete: function(id) {
+          console.log('onDelete', id)
+
+          firestore.collection('teams').doc(id).delete().then(() => {
+            console.log('deleted')
+          }, error => {
+            console.log('error', error)
+          })
+        },
+        getTeam: function(id) {
+          return this.teams[id] || {};
+        },
+        shuffleArray(array) {
+          for (let i = array.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [array[i], array[j]] = [array[j], array[i]];
+          }
+        },
+        generateSchedule: function() {
+          console.log('generateSchedule', this.teams)
+
+          let schedule = {};
+
+          const slotCount = this.timeslots.length;
+          for (let date of this.dates) {
+            schedule[date] = {};
+
+            // get a list of keys
+            let ids = Object.keys(this.teams);
+            this.shuffleArray(ids);
+
+            // randomize starting location, incase the number of teams
+            // is not evenly divisible
+            let slotIndex = Math.floor(Math.random() * slotCount);
+            console.log(date, 'slot', slotIndex)
+
+            for (let id of ids) {
+              let timeslot = this.timeslots[slotIndex];
+              console.log('---', id, slotIndex, timeslot)
+
+              if (!schedule[date][timeslot])
+                schedule[date][timeslot] = [];
+              schedule[date][timeslot].push(id);
+
+              slotIndex = (slotIndex + 1) % slotCount;
+            }
+
+            console.log('==================')
+          }
+
+          console.log('schedule', schedule)
+          this.schedule = schedule;
         }
       }
     });
