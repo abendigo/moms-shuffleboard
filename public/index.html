@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <!-- <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet"> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -58,8 +58,12 @@
   <body>
     <div id="app">
       <ul>
-        <li v-for="team in teams">
-          {{ team }} <button v-on:click="onDelete(team.did)">delete</button>
+        <li v-for="team, index of teams">
+          <ol>
+            <li>{{ team.member_1 }}</li>
+            <li>{{ team.member_2 }}</li>
+          </ol>
+          <button v-on:click="onDelete(index)">delete</button>
         </li>
       </ul>
 
@@ -119,23 +123,20 @@
           member_2: ''
         },
         timeslots: ['13:00', '14:00', '15:00'],
-        dates: ['Sep 24', 'Oct 01', 'Oct 08'],
+        dates: [
+          'Sep 24', 'Oct 01', 'Oct 08', 'Oct 15', 'Oct 22',
+          'Oct 29', 'Nov 05', 'Nov 12', 'Nov 19', 'Nov 26'],
         schedule: {
-          'Sep 24': {
-            '13:00': [],
-            '14:00': [],
-            '15:00': []
-          },
-          'Oct 01': {
-            '13:00': [],
-            '14:00': [],
-            '15:00': []
-          },
-          'Oct 08': {
-            '13:00': [],
-            '14:00': [],
-            '15:00': []
-          }
+          'Sep 24': {'13:00': [], '14:00': [], '15:00': []},
+          'Oct 01': {'13:00': [], '14:00': [], '15:00': []},
+          'Oct 08': {'13:00': [], '14:00': [], '15:00': []},
+          'Oct 15': {'13:00': [], '14:00': [], '15:00': []},
+          'Oct 22': {'13:00': [], '14:00': [], '15:00': []},
+          'Oct 29': {'13:00': [], '14:00': [], '15:00': []},
+          'Nov 05': {'13:00': [], '14:00': [], '15:00': []},
+          'Nov 12': {'13:00': [], '14:00': [], '15:00': []},
+          'Nov 19': {'13:00': [], '14:00': [], '15:00': []},
+          'Nov 26': {'13:00': [], '14:00': [], '15:00': []}
         }
       },
 
