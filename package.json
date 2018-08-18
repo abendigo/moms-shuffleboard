@@ -1,0 +1,6 @@
+{
+  "name": "moms-shuffleboard",
+  "devDependencies": {
+    "firebase-tools": "^4.1.2"
+  }
+}
