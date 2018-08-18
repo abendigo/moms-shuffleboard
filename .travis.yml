@@ -1,9 +1,0 @@
-language: node_js
-
-script:
- — echo “Deploy!!”
-
-deploy:
-  provider: firebase
-  token:
-    secure: "YOUR ENCRYPTED token"
