@@ -15,16 +15,16 @@
     <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-firestore.js"></script>
 
     <script>
-      // Initialize Firebase
-      const config = {
-        apiKey: "AIzaSyDAx27-_XF2eM7wXiedd7goKm5p1fMONfs",
-        authDomain: "moms-shuffleboard.firebaseapp.com",
-        databaseURL: "https://moms-shuffleboard.firebaseio.com",
-        projectId: "moms-shuffleboard",
-        storageBucket: "moms-shuffleboard.appspot.com",
-        messagingSenderId: "154777839060"
-      };
-      firebase.initializeApp(config);
+      // // Initialize Firebase
+      // const config = {
+      //   apiKey: "AIzaSyDAx27-_XF2eM7wXiedd7goKm5p1fMONfs",
+      //   authDomain: "moms-shuffleboard.firebaseapp.com",
+      //   databaseURL: "https://moms-shuffleboard.firebaseio.com",
+      //   projectId: "moms-shuffleboard",
+      //   storageBucket: "moms-shuffleboard.appspot.com",
+      //   messagingSenderId: "154777839060"
+      // };
+      // firebase.initializeApp(config);
     </script>
 
     <style>
@@ -76,9 +76,9 @@
         </ul>
 
         <form v-on:submit.prevent="processForm">
-        <input type="text" placeholder="First Team Member" v-model="form.member_1">
-        <input type="text" placeholder="Second Team Member" v-model="form.member_2">
-        <input type="submit">
+          <input type="text" placeholder="First Team Member" v-model="form.member_1">
+          <input type="text" placeholder="Second Team Member" v-model="form.member_2">
+          <input type="submit">
         </form>
 
         <button @click="generateSchedule">Generate Schedule</button>
@@ -98,6 +98,7 @@
   <script type="module">
     import { Schedule } from './schedule.mjs';
     import { Teams } from './teams.mjs';
+    import { store } from './store.mjs';
 
     const router = new VueRouter({
       mode: 'history',
@@ -107,34 +108,6 @@
       ]
     })
 
-    const store = new Vuex.Store({
-      state: {
-        timeslots: ['13:00', '14:00', '15:00'],
-        dates: [
-          'Sep 24', 'Oct 01', 'Oct 08', 'Oct 15', 'Oct 22',
-          'Oct 29', 'Nov 05', 'Nov 12', 'Nov 19', 'Nov 26'
-        ],
-
-        teams: [],
-        schedule: {
-          'Sep 24': {'13:00': [], '14:00': [], '15:00': []},
-          'Oct 01': {'13:00': [], '14:00': [], '15:00': []},
-          'Oct 08': {'13:00': [], '14:00': [], '15:00': []},
-          'Oct 15': {'13:00': [], '14:00': [], '15:00': []},
-          'Oct 22': {'13:00': [], '14:00': [], '15:00': []},
-          'Oct 29': {'13:00': [], '14:00': [], '15:00': []},
-          'Nov 05': {'13:00': [], '14:00': [], '15:00': []},
-          'Nov 12': {'13:00': [], '14:00': [], '15:00': []},
-          'Nov 19': {'13:00': [], '14:00': [], '15:00': []},
-          'Nov 26': {'13:00': [], '14:00': [], '15:00': []}
-        }
-      },
-      mutations: {
-        setTeams(state, teams) { state.teams = teams; },
-        setSchedule(state, schedule) { state.schedule = schedule; }
-      }
-    });
-
     const app = new Vue({
       el: '#app',
       router: router,
@@ -142,23 +115,5 @@
       components: { Schedule, Teams }
     });
 
-    const firestore = firebase.firestore();
-    const settings = {/* your settings... */ timestampsInSnapshots: true};
-    firestore.settings(settings);
-
-    // firestore.collection("teams").get().then((querySnapshot) => {
-    firestore.collection("teams").onSnapshot((querySnapshot) => {
-      let teams = {};
-      querySnapshot.forEach((doc) => {
-          console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-          teams[doc.id] = doc.data();
-          // teams.push(Object.assign({
-          //   did: doc.id
-          // }, doc.data()));
-      });
-      console.log(teams);
-      store.commit('setTeams', teams);
-    });
   </script>
-
 </html>
