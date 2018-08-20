@@ -27,25 +27,6 @@
       firebase.initializeApp(config);
     </script>
 
-    <script>
-      const firestore = firebase.firestore();
-      const settings = {/* your settings... */ timestampsInSnapshots: true};
-      firestore.settings(settings);
-
-      // firestore.collection("teams").get().then((querySnapshot) => {
-      firestore.collection("teams").onSnapshot((querySnapshot) => {
-        let teams = {};
-        querySnapshot.forEach((doc) => {
-            console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-            teams[doc.id] = doc.data();
-            // teams.push(Object.assign({
-            //   did: doc.id
-            // }, doc.data()));
-        });
-        console.log(teams);
-        store.commit('setTeams', teams);
-      });
-    </script>
     <style>
       table {
           border-collapse: collapse;
@@ -76,17 +57,17 @@
 
       <button @click="generateSchedule">Generate Schedule</button>
 
-      <table style="border: 4px solid black;">
+      <!-- <table style="border: 4px solid black;">
         <thead>
           <tr>
             <th></th>
-            <th v-for="date in dates">{{date}}</th>
+            <th v-for="timeslot in timeslots">{{timeslot}}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="timeslot in timeslots">
-            <td>{{timeslot}}</td>
-            <td v-for="date in dates">
+          <tr v-for="date in dates">
+            <td>{{date}}</td>
+            <td v-for="timeslot in timeslots">
               <ul>
                 <li v-for="team in schedule[date][timeslot]">
                   <ol>
@@ -98,59 +79,35 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
 
+      <moms-schedule></moms-schedule>
 
-      <h2>Router Links</h2>
+      <!-- <h2>Router Links</h2>
       <router-link to="/schedule">Schedule</router-link>
       <router-link to="/teams">Teams</router-link>
       <h2>Router Outlet</h2>
-      <router-view></router-view>
+      <router-view></router-view> -->
     </div>
   </body>
 
-  <script>
-    const Foo = { template: '<div>foo</div>' }
-    const Bar = { template: '<div>bar</div>' }
+  <script type="module">
+    import { Schedule } from './schedule.mjs';
+    import { Teams } from './teams.mjs';
 
     const routes = [
-      { path: '/foo', component: Foo },
-      { path: '/bar', component: Bar }
+      { path: '/schedule', component: Schedule },
+      { path: '/teams', component: Teams }
     ]
 
     const router = new VueRouter({
+      mode: 'history',
       routes // short for `routes: routes`
     })
-  </script>
 
-  <script>
     const store = new Vuex.Store({
       state: {
-        teams: []
-      },
-      mutations: {
-        setTeams(state, teams) { state.teams = teams; }
-      }
-    });
-  </script>
-
-  <script>
-    const app = new Vue({
-      el: '#app',
-      router: router,
-      store: store,
-      computed: Vuex.mapState({
-        teams: 'teams'
-      }),
-      data: {
-        form: {
-          member_1: '',
-          member_2: ''
-        },
-        timeslots: ['13:00', '14:00', '15:00'],
-        dates: [
-          'Sep 24', 'Oct 01', 'Oct 08', 'Oct 15', 'Oct 22',
-          'Oct 29', 'Nov 05', 'Nov 12', 'Nov 19', 'Nov 26'],
+        teams: [],
         schedule: {
           'Sep 24': {'13:00': [], '14:00': [], '15:00': []},
           'Oct 01': {'13:00': [], '14:00': [], '15:00': []},
@@ -163,6 +120,43 @@
           'Nov 19': {'13:00': [], '14:00': [], '15:00': []},
           'Nov 26': {'13:00': [], '14:00': [], '15:00': []}
         }
+      },
+      mutations: {
+        setTeams(state, teams) { state.teams = teams; },
+        setSchedule(state, schedule) { state.schedule = schedule; }
+      }
+    });
+
+    const app = new Vue({
+      el: '#app',
+      router: router,
+      store: store,
+      components: { 'moms-schedule': Schedule },
+      computed: Vuex.mapState({
+        teams: 'teams'
+      }),
+      data: {
+        form: {
+          member_1: '',
+          member_2: ''
+        },
+        timeslots: ['13:00', '14:00', '15:00'],
+        dates: [
+          'Sep 24', 'Oct 01', 'Oct 08', 'Oct 15', 'Oct 22',
+          'Oct 29', 'Nov 05', 'Nov 12', 'Nov 19', 'Nov 26'
+        ],
+        // schedule: {
+        //   'Sep 24': {'13:00': [], '14:00': [], '15:00': []},
+        //   'Oct 01': {'13:00': [], '14:00': [], '15:00': []},
+        //   'Oct 08': {'13:00': [], '14:00': [], '15:00': []},
+        //   'Oct 15': {'13:00': [], '14:00': [], '15:00': []},
+        //   'Oct 22': {'13:00': [], '14:00': [], '15:00': []},
+        //   'Oct 29': {'13:00': [], '14:00': [], '15:00': []},
+        //   'Nov 05': {'13:00': [], '14:00': [], '15:00': []},
+        //   'Nov 12': {'13:00': [], '14:00': [], '15:00': []},
+        //   'Nov 19': {'13:00': [], '14:00': [], '15:00': []},
+        //   'Nov 26': {'13:00': [], '14:00': [], '15:00': []}
+        // }
       },
 
       methods: {
@@ -229,9 +223,28 @@
           }
 
           console.log('schedule', schedule)
-          this.schedule = schedule;
+          // this.schedule = schedule;
+          store.commit('setSchedule', schedule);
         }
       }
     });
+    const firestore = firebase.firestore();
+    const settings = {/* your settings... */ timestampsInSnapshots: true};
+    firestore.settings(settings);
+
+    // firestore.collection("teams").get().then((querySnapshot) => {
+    firestore.collection("teams").onSnapshot((querySnapshot) => {
+      let teams = {};
+      querySnapshot.forEach((doc) => {
+          console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+          teams[doc.id] = doc.data();
+          // teams.push(Object.assign({
+          //   did: doc.id
+          // }, doc.data()));
+      });
+      console.log(teams);
+      store.commit('setTeams', teams);
+    });
   </script>
+
 </html>
