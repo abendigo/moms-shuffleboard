@@ -1,13 +1,3 @@
-// Initialize Firebase
-const config = {
-  apiKey: "AIzaSyDAx27-_XF2eM7wXiedd7goKm5p1fMONfs",
-  authDomain: "moms-shuffleboard.firebaseapp.com",
-  databaseURL: "https://moms-shuffleboard.firebaseio.com",
-  projectId: "moms-shuffleboard",
-  storageBucket: "moms-shuffleboard.appspot.com",
-  messagingSenderId: "154777839060"
-};
-firebase.initializeApp(config);
 
 const firestore = firebase.firestore();
 const settings = {/* your settings... */ timestampsInSnapshots: true};
@@ -33,11 +23,14 @@ export const store = new Vuex.Store({
       'Nov 12': {'13:00': [], '14:00': [], '15:00': []},
       'Nov 19': {'13:00': [], '14:00': [], '15:00': []},
       'Nov 26': {'13:00': [], '14:00': [], '15:00': []}
-    }
+    },
+
+    user: undefined
   },
   mutations: {
     setTeams(state, teams) { state.teams = teams; },
-    setSchedule(state, schedule) { state.schedule = schedule; }
+    setSchedule(state, schedule) { state.schedule = schedule; },
+    setUser(state, user) { state.user = user; }
   },
   actions: {
     addTeam: function({commit}, {form}) {

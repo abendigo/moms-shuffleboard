@@ -11,16 +11,29 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script> -->
 
     <!-- <script src="https://www.gstatic.com/firebasejs/5.3.1/firebase.js"></script> -->
-    <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-firestore.js"></script>
 
     <script src="https://cdn.firebase.com/libs/firebaseui/3.3.0/firebaseui.js"></script>
     <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.3.0/firebaseui.css" />
 
     <script type="text/javascript">
+      // Initialize Firebase
+      const config = {
+        apiKey: "AIzaSyDAx27-_XF2eM7wXiedd7goKm5p1fMONfs",
+        authDomain: "moms-shuffleboard.firebaseapp.com",
+        databaseURL: "https://moms-shuffleboard.firebaseio.com",
+        projectId: "moms-shuffleboard",
+        storageBucket: "moms-shuffleboard.appspot.com",
+        messagingSenderId: "154777839060"
+      };
+      firebase.initializeApp(config);
+
       // FirebaseUI config.
       var uiConfig = {
-        signInSuccessUrl: '<url-to-redirect-to-on-success>',
+        signInFlow: 'popup',
+        signInSuccessUrl: '/',
         signInOptions: [
           // Leave the lines as is for the providers you want to offer your users.
           firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -34,17 +47,19 @@
         // tosUrl and privacyPolicyUrl accept either url string or a callback
         // function.
         // Terms of service url/callback.
-        tosUrl: '<your-tos-url>',
+        // tosUrl: '<your-tos-url>',
         // Privacy policy url/callback.
-        privacyPolicyUrl: function() {
-          window.location.assign('<your-privacy-policy-url>');
-        }
+        // privacyPolicyUrl: function() {
+        //   window.location.assign('<your-privacy-policy-url>');
+        // }
       };
 
       // Initialize the FirebaseUI Widget using Firebase.
       var ui = new firebaseui.auth.AuthUI(firebase.auth());
       // The start method will wait until the DOM is loaded.
-      ui.start('#firebaseui-auth-container', uiConfig);
+      if (ui.isPendingRedirect()) {
+        ui.start('#firebaseui-auth-container', uiConfig);
+      }
     </script>
 
     <style>
@@ -108,8 +123,13 @@
 
 
     <script type="text/javascript">
+      let globalUser;
+
       initApp = function() {
         firebase.auth().onAuthStateChanged(function(user) {
+          // store.commit('setUser', user);
+          globalUser = user;
+
           if (user) {
             // User is signed in.
             var displayName = user.displayName;
@@ -154,14 +174,17 @@
 
   </head>
   <body>
-    <div id="firebaseui-auth-container"></div>
-
-    <h1>Welcome to My Awesome App</h1>
-    <div id="sign-in-status"></div>
-    <div id="sign-in"></div>
-    <div id="account-details"></div>
-
     <div id="app">
+      <div id="firebaseui-auth-container"></div>
+
+      <h1>Welcome to My Awesome App</h1>
+      <div id="sign-in-status"></div>
+      <div id="sign-in"></div>
+      <div id="account-details"></div>
+
+      <button @click="signin">Sign In</button>
+      <button @click="signout">Sign Out</button>
+
       <h2>Router Links</h2>
       <router-link to="/">Schedule</router-link>
       <router-link to="/teams">Teams</router-link>
@@ -179,7 +202,17 @@
       mode: 'history',
       routes: [
         { path: '/', component: Schedule },
-        { path: '/teams', component: Teams }
+        { path: '/teams', component: Teams,
+          // beforeEnter: (to, from, next) => {
+          //   console.log('beforeEnter', globalUser);
+          //   if (globalUser && globalUser.email === 'mark@oosterveld.org') {
+          //     console.log('user', globalUser.email)
+          //     next();
+          //   } else {
+          //     next('/');
+          //   }
+          // }
+        }
       ]
     })
 
@@ -187,7 +220,22 @@
       el: '#app',
       router: router,
       store: store,
-      components: { Schedule, Teams }
+      components: { Schedule, Teams },
+      computed: Vuex.mapState(['user']),
+      methods: {
+        signin: function() {
+          ui.start('#firebaseui-auth-container', uiConfig);
+        },
+        signout: function() {
+          console.log('signout')
+          firebase.auth().signOut().then(function() {
+            console.log('success')
+            router.push('/');
+          }, function(error) {
+            console.log('error', error)
+          });
+        }
+      }
     });
 
   </script>
