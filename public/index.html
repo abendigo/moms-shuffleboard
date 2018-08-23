@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet"> -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet"> -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
     <script src="https://unpkg.com/vuex/dist/vuex.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
 
     <!-- <script src="https://www.gstatic.com/firebasejs/5.3.1/firebase.js"></script> -->
     <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
@@ -84,40 +84,48 @@
           <tr v-for="date in dates">
             <td>{{date}}</td>
             <td v-for="timeslot in timeslots">
-              <ul>
-                <li v-for="team in schedule[date][timeslot]">
-                  <ol>
-                    <li>{{ getTeam(team).member_1 }}</li>
-                    <li>{{ getTeam(team).member_2 }}</li>
-                  </ol>
-                </li>
-              </ul>
+              <v-card :key='team.id' v-for="team in schedule[date][timeslot]">
+                <ul>
+                  <li>{{ getTeam(team).member_1 }}</li>
+                  <li>{{ getTeam(team).member_2 }}</li>
+                </ul>
+              </v-card>
             </td>
           </tr>
         </tbody>
       </table>
     </script>
 
+    <style>
+      .v-card {
+        display: inline-block;
+        min-width: 150px;
+      }
+    </style>
+
     <script type="text/x-template" id="teams-template">
-      <div>
-        <ul>
-        <li v-for="team, index of teams">
-          <ol>
-            <li>{{ team.member_1 }}</li>
-            <li>{{ team.member_2 }}</li>
-          </ol>
-          <button v-on:click="onDelete(index)">delete</button>
-        </li>
-        </ul>
+      <v-container>
+        <v-container>
+          <v-card :key='team.id' v-for="team, index of teams">
+            <ul>
+              <li>{{ team.member_1 }}</li>
+              <li>{{ team.member_2 }}</li>
+            </ul>
+            <v-btn color="error" v-on:click="onDelete(index)">delete</v-btn>
+          </v-card>
+        </v-container>
 
-        <form v-on:submit.prevent="processForm">
-          <input type="text" placeholder="First Team Member" v-model="form.member_1">
-          <input type="text" placeholder="Second Team Member" v-model="form.member_2">
-          <input type="submit">
-        </form>
+        <v-card style="width: 300px;">
+          <h3>Create New Team</h3>
+          <form v-on:submit.prevent="processForm">
+            <v-text-field label="First Team Member" v-model="form.member_1"></v-text-field>
+            <v-text-field label="Second Team Member" v-model="form.member_2"></v-text-field>
+            <v-btn type="submit">Add Team</v-btn>
+          </form>
+        </v-card>
 
-        <button @click="generateSchedule">Generate Schedule</button>
-      </div>
+        <v-btn color="success" @click="generateSchedule">Generate Schedule</v-btn>
+      </v-container>
     </script>
 
 
@@ -127,15 +135,18 @@
 
   </head>
   <body>
-    <div id="app">
+    <v-app id="app">
       <h2>Drayton Suffleboard League, 2018</h2>
 
       <div id="firebaseui-auth-container"></div>
       <button v-if="isLoggedIn" @click="signout">Sign Out</button>
+      <router-link v-if="canManageTeams" to="/">Schedule</router-link>
       <router-link v-if="canManageTeams" to="/teams">Manage Teams</router-link>
 
-      <router-view v-bind:key="$route.fullPath"></router-view>
-    </div>
+      <v-content>
+        <router-view v-bind:key="$route.fullPath"></router-view>
+      </v-content>
+    </v-app>
   </body>
 
   <script type="module">
