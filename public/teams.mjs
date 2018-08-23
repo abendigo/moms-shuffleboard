@@ -13,6 +13,8 @@ export const Teams = {
       console.log('processForm', this.form.member_1, this.form.member_2);
 
       this.$store.dispatch('addTeam', { form: this.form });
+      this.form.member_1 = '';
+      this.form.member_2 = '';
     },
     onDelete: function(id) {
       console.log('onDelete', id)

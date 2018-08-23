@@ -122,73 +122,18 @@
 
 
 
-    <script type="text/javascript">
-      let globalUser;
-
-      initApp = function() {
-        firebase.auth().onAuthStateChanged(function(user) {
-          // store.commit('setUser', user);
-          globalUser = user;
-
-          if (user) {
-            // User is signed in.
-            var displayName = user.displayName;
-            var email = user.email;
-            var emailVerified = user.emailVerified;
-            var photoURL = user.photoURL;
-            var uid = user.uid;
-            var phoneNumber = user.phoneNumber;
-            var providerData = user.providerData;
-            user.getIdToken().then(function(accessToken) {
-              document.getElementById('sign-in-status').textContent = 'Signed in';
-              document.getElementById('sign-in').textContent = 'Sign out';
-              document.getElementById('account-details').textContent = JSON.stringify({
-                displayName: displayName,
-                email: email,
-                emailVerified: emailVerified,
-                phoneNumber: phoneNumber,
-                photoURL: photoURL,
-                uid: uid,
-                accessToken: accessToken,
-                providerData: providerData
-              }, null, '  ');
-            });
-          } else {
-            // User is signed out.
-            document.getElementById('sign-in-status').textContent = 'Signed out';
-            document.getElementById('sign-in').textContent = 'Sign in';
-            document.getElementById('account-details').textContent = 'null';
-          }
-        }, function(error) {
-          console.log(error);
-        });
-      };
-
-      window.addEventListener('load', function() {
-        initApp()
-      });
-    </script>
-
 
 
 
   </head>
   <body>
     <div id="app">
+      <h2>Drayton Suffleboard League, 2018</h2>
+
       <div id="firebaseui-auth-container"></div>
+      <button v-if="isLoggedIn" @click="signout">Sign Out</button>
+      <router-link v-if="canManageTeams" to="/teams">Manage Teams</router-link>
 
-      <h1>Welcome to My Awesome App</h1>
-      <div id="sign-in-status"></div>
-      <div id="sign-in"></div>
-      <div id="account-details"></div>
-
-      <button @click="signin">Sign In</button>
-      <button @click="signout">Sign Out</button>
-
-      <h2>Router Links</h2>
-      <router-link to="/">Schedule</router-link>
-      <router-link to="/teams">Teams</router-link>
-      <h2>Router Outlet</h2>
       <router-view v-bind:key="$route.fullPath"></router-view>
     </div>
   </body>
@@ -203,15 +148,14 @@
       routes: [
         { path: '/', component: Schedule },
         { path: '/teams', component: Teams,
-          // beforeEnter: (to, from, next) => {
-          //   console.log('beforeEnter', globalUser);
-          //   if (globalUser && globalUser.email === 'mark@oosterveld.org') {
-          //     console.log('user', globalUser.email)
-          //     next();
-          //   } else {
-          //     next('/');
-          //   }
-          // }
+          beforeEnter: (to, from, next) => {
+            console.log('beforeEnter', store.state.user);
+            if (store.state.user && store.state.user.email === 'mark@oosterveld.org') {
+              next();
+            } else {
+              next('/');
+            }
+          }
         }
       ]
     })
@@ -221,15 +165,26 @@
       router: router,
       store: store,
       components: { Schedule, Teams },
-      computed: Vuex.mapState(['user']),
-      methods: {
-        signin: function() {
-          ui.start('#firebaseui-auth-container', uiConfig);
+      computed: {
+        isLoggedIn() {
+          return this.$store.state.user !== null;
         },
+        canManageTeams() {
+          return this.$store.state.user && this.$store.state.user.email === 'mark@oosterveld.org';
+        },
+        ...Vuex.mapState(['user'])
+      },
+      watch: {
+        isLoggedIn: function(newValue, oldValue) {
+          console.log('watch::isLoggedIn', newValue, oldValue)
+          if (newValue === false) {
+            ui.start('#firebaseui-auth-container', uiConfig);
+          }
+        }
+      },
+      methods: {
         signout: function() {
-          console.log('signout')
           firebase.auth().signOut().then(function() {
-            console.log('success')
             router.push('/');
           }, function(error) {
             console.log('error', error)
@@ -238,5 +193,47 @@
       }
     });
 
-  </script>
+      // let globalUser;
+
+
+      window.addEventListener('load', function() {
+        firebase.auth().onAuthStateChanged(function(user) {
+          store.commit('setUser', user);
+          // globalUser = user;
+
+          if (user) {
+            // User is signed in.
+            // var displayName = user.displayName;
+            // var email = user.email;
+            // var emailVerified = user.emailVerified;
+            // var photoURL = user.photoURL;
+            // var uid = user.uid;
+            // var phoneNumber = user.phoneNumber;
+            // var providerData = user.providerData;
+            // user.getIdToken().then(function(accessToken) {
+            //   document.getElementById('sign-in-status').textContent = 'Signed in';
+            //   document.getElementById('sign-in').textContent = 'Sign out';
+            //   document.getElementById('account-details').textContent = JSON.stringify({
+            //     displayName: displayName,
+            //     email: email,
+            //     emailVerified: emailVerified,
+            //     phoneNumber: phoneNumber,
+            //     photoURL: photoURL,
+            //     uid: uid,
+            //     accessToken: accessToken,
+            //     providerData: providerData
+            //   }, null, '  ');
+            // });
+          } else {
+            // User is signed out.
+            // document.getElementById('sign-in-status').textContent = 'Signed out';
+            // document.getElementById('sign-in').textContent = 'Sign in';
+            // document.getElementById('account-details').textContent = 'null';
+          }
+        }, function(error) {
+          console.log(error);
+        });
+      });
+    </script>
+
 </html>

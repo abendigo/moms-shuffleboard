@@ -92,8 +92,11 @@ export const store = new Vuex.Store({
         // console.log('==================')
       }
 
-      // console.log('schedule', schedule)
-      commit('setSchedule', schedule);
+      firestore.collection('schedules').doc('2018').set(schedule).then(ref => {
+        console.log('success', ref);
+      }, error => {
+        console.log('error', error);
+      });
     }
   }
 });
@@ -102,12 +105,12 @@ export const store = new Vuex.Store({
 firestore.collection("teams").onSnapshot((querySnapshot) => {
   let teams = {};
   querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
       teams[doc.id] = doc.data();
-      // teams.push(Object.assign({
-      //   did: doc.id
-      // }, doc.data()));
   });
-  console.log(teams);
+
   store.commit('setTeams', teams);
+});
+
+firestore.collection("schedules").doc('2018').onSnapshot((snapshot) => {
+  store.commit('setSchedule', snapshot.data());
 });
