@@ -15,8 +15,8 @@
     <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-firestore.js"></script>
 
-    <script src="https://cdn.firebase.com/libs/firebaseui/3.3.0/firebaseui.js"></script>
-    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.3.0/firebaseui.css" />
+    <!-- <script src="https://cdn.firebase.com/libs/firebaseui/3.3.0/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.3.0/firebaseui.css" /> -->
 
     <script type="text/javascript">
       // Initialize Firebase
@@ -29,7 +29,7 @@
         messagingSenderId: "154777839060"
       };
       firebase.initializeApp(config);
-
+/*
       // FirebaseUI config.
       var uiConfig = {
         signInFlow: 'popup',
@@ -60,6 +60,7 @@
       if (ui.isPendingRedirect()) {
         ui.start('#firebaseui-auth-container', uiConfig);
       }
+*/
     </script>
 
     <style>
@@ -140,6 +141,7 @@
 
       <div id="firebaseui-auth-container"></div>
       <button v-if="isLoggedIn" @click="signout">Sign Out</button>
+      <button v-if="!isLoggedIn" @click="signin">Sign In</button>
       <router-link v-if="canManageTeams" to="/">Schedule</router-link>
       <router-link v-if="canManageTeams" to="/teams">Manage Teams</router-link>
 
@@ -185,15 +187,18 @@
         },
         ...Vuex.mapState(['user'])
       },
-      watch: {
-        isLoggedIn: function(newValue, oldValue) {
-          console.log('watch::isLoggedIn', newValue, oldValue)
-          if (newValue === false) {
-            ui.start('#firebaseui-auth-container', uiConfig);
-          }
-        }
-      },
+      // watch: {
+      //   isLoggedIn: function(newValue, oldValue) {
+      //     console.log('watch::isLoggedIn', newValue, oldValue)
+      //     if (newValue === false) {
+      //       ui.start('#firebaseui-auth-container', uiConfig);
+      //     }
+      //   }
+      // },
       methods: {
+        signin: function() {
+          firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        },
         signout: function() {
           firebase.auth().signOut().then(function() {
             router.push('/');
