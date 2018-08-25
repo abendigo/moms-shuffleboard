@@ -163,7 +163,7 @@
         { path: '/teams', component: Teams,
           beforeEnter: (to, from, next) => {
             console.log('beforeEnter', store.state.user);
-            if (store.state.user && store.state.user.email === 'mark@oosterveld.org') {
+            if (store.state.user && store.state.user.email === 'ann@oosterveld.org') {
               next();
             } else {
               next('/');
