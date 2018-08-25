@@ -161,19 +161,19 @@
       routes: [
         { path: '/', component: Schedule },
         { path: '/teams', component: Teams,
-          beforeEnter: (to, from, next) => {
-            console.log('beforeEnter', store.state.user);
-            if (store.state.user)
-            //  && (
-            //     store.state.user.email === 'ann@oosterveld.org' ||
-            //     store.state.user.email === 'mark@oosterveld.org'
-            //     ))
-            {
-              next();
-            } else {
-              next('/');
-            }
-          }
+          // beforeEnter: (to, from, next) => {
+          //   console.log('beforeEnter', store.state.user);
+          //   if (store.state.user)
+          //   //  && (
+          //   //     store.state.user.email === 'ann@oosterveld.org' ||
+          //   //     store.state.user.email === 'mark@oosterveld.org'
+          //   //     ))
+          //   {
+          //     next();
+          //   } else {
+          //     next('/');
+          //   }
+          // }
         }
       ]
     })
@@ -188,7 +188,7 @@
           return this.$store.state.user !== null;
         },
         canManageTeams() {
-          return this.$store.state.user && (this.$store.state.user.email === 'mark@oosterveld.org' || this.$store.state.user.email === 'ann@oosterveld.org') ;
+          return true; //this.$store.state.user && (this.$store.state.user.email === 'mark@oosterveld.org' || this.$store.state.user.email === 'ann@oosterveld.org') ;
         },
         ...Vuex.mapState(['user'])
       },
