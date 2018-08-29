@@ -7,8 +7,8 @@ export const store = new Vuex.Store({
   state: {
     timeslots: ['13:00', '14:00', '15:00'],
     dates: [
-      'Sep 24', 'Oct 01', 'Oct 08', 'Oct 15', 'Oct 22',
-      'Oct 29', 'Nov 05', 'Nov 12', 'Nov 19', 'Nov 26'
+      'Sep 20', 'Sep 27', 'Oct 04', 'Oct 11', 'Oct 18',
+      'Oct 25', 'Nov 01', 'Nov 08', 'Nov 15', 'Nov 22'
     ],
 
     teams: [],
@@ -113,4 +113,9 @@ firestore.collection("teams").onSnapshot((querySnapshot) => {
 
 firestore.collection("schedules").doc('2018').onSnapshot((snapshot) => {
   store.commit('setSchedule', snapshot.data());
+});
+
+firebase.auth().onAuthStateChanged(function(user) {
+  console.log('xxxxxxxxxxxxxx')
+  store.commit('setUser', user);
 });
