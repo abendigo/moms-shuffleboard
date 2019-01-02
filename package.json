@@ -1,6 +1,10 @@
 {
   "name": "moms-shuffleboard",
+  "scripts": {
+    "cypress:open": "cypress open"
+  },
   "devDependencies": {
+    "cypress": "^3.1.4",
     "firebase-tools": "^4.1.2"
   }
 }
