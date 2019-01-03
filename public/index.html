@@ -110,24 +110,61 @@
 
     <script type="text/x-template" id="teams-template">
       <v-container>
+        <h3>Dates</h3>
         <v-container>
-          <v-card :key='team.id' v-for="team, index of teams">
-            <ul>
-              <li>{{ team.member_1 }}</li>
-              <li>{{ team.member_2 }}</li>
-            </ul>
-            <v-btn color="error" v-on:click="onDelete(index)">delete</v-btn>
+          <v-container>
+            <v-card :key='date' v-for="date in dates">
+              {{ date }}
+              <v-btn color="error" v-on:click="onDeleteDate(date)">delete</v-btn>
+            </v-card>
+          </v-container>
+          <v-card style="width: 300px;">
+            <form v-on:submit.prevent="addDate">
+              <v-text-field label="Date" v-model="form.member_1"></v-text-field>
+              <v-btn type="submit">Add Date</v-btn>
+            </form>
           </v-card>
         </v-container>
 
-        <v-card style="width: 300px;">
-          <h3>Create New Team</h3>
-          <form v-on:submit.prevent="processForm">
-            <v-text-field label="First Team Member" v-model="form.member_1"></v-text-field>
-            <v-text-field label="Second Team Member" v-model="form.member_2"></v-text-field>
-            <v-btn type="submit">Add Team</v-btn>
-          </form>
-        </v-card>
+
+        <h3>Times</h3>
+        <v-container>
+          <v-container>
+            <v-card :key='timeslot' v-for="timeslot in timeslots">
+              {{ timeslot }}
+              <v-btn color="error" v-on:click="onDeleteTimeslot(timeslot)">delete</v-btn>
+            </v-card>
+          </v-container>
+          <v-card style="width: 300px;">
+              <form v-on:submit.prevent="addTimeslot">
+                <v-text-field label="Timeslot" v-model="form.member_1"></v-text-field>
+                <v-btn type="submit">Add Timeslot</v-btn>
+              </form>
+            </v-card>
+          </v-container>
+
+
+        <h3>Teams</h3>
+        <v-container>
+          <v-container>
+            <v-card :key='team.id' v-for="team, index of teams">
+              <ul>
+                <li>{{ team.member_1 }}</li>
+                <li>{{ team.member_2 }}</li>
+              </ul>
+              <v-btn color="error" v-on:click="onDeleteTeam(index)">delete</v-btn>
+            </v-card>
+          </v-container>
+
+          <v-card style="width: 300px;">
+            <h3>Create New Team</h3>
+            <form v-on:submit.prevent="addTeam">
+              <v-text-field label="First Team Member" v-model="form.member_1"></v-text-field>
+              <v-text-field label="Second Team Member" v-model="form.member_2"></v-text-field>
+              <v-btn type="submit">Add Team</v-btn>
+            </form>
+          </v-card>
+        </v-container>
 
         <v-btn color="success" @click="generateSchedule">Generate Schedule</v-btn>
       </v-container>

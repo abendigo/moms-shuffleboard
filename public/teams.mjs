@@ -7,16 +7,16 @@ export const Teams = {
       }
     };
   },
-  computed: Vuex.mapState(['teams']),
+  computed: Vuex.mapState(['timeslots', 'dates', 'teams']),
   methods: {
-    processForm: function() {
+    addTeam: function() {
       console.log('processForm', this.form.member_1, this.form.member_2);
 
       this.$store.dispatch('addTeam', { form: this.form });
       this.form.member_1 = '';
       this.form.member_2 = '';
     },
-    onDelete: function(id) {
+    onDeleteTeam: function(id) {
       console.log('onDelete', id)
 
       this.$store.dispatch('deleteTeam', { id });
