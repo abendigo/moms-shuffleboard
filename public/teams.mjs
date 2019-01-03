@@ -9,6 +9,14 @@ export const Teams = {
   },
   computed: Vuex.mapState(['timeslots', 'dates', 'teams']),
   methods: {
+    addDate: function() {
+      this.$store.dispatch('addDate', { form: this.form });
+      this.form.member_1 = '';
+    },
+    addTimeslot: function() {
+      this.$store.dispatch('addTimeslot', { form: this.form });
+      this.form.member_1 = '';
+    },
     addTeam: function() {
       console.log('processForm', this.form.member_1, this.form.member_2);
 

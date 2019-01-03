@@ -28,11 +28,26 @@ export const store = new Vuex.Store({
     user: undefined
   },
   mutations: {
+    addDate(state, date) {
+      console.log('addDate', state, date);
+      let xxx = [...state.dates];
+      xxx.push(date);
+      console.log('xxx', xxx)
+      Vue.set(state, 'dates', xxx);
+    },
+    addTimeslot(state, timeslot) {state.timeslots.push[timeslot]; },
     setTeams(state, teams) { state.teams = teams; },
     setSchedule(state, schedule) { state.schedule = schedule; },
     setUser(state, user) { state.user = user; }
   },
   actions: {
+    addDate: function({commit}, {form}) {
+      console.log('addDate', form.member_1)
+      commit('addDate', form.member_1);
+    },
+    addTimeslot: function({}, {form}) {
+      commit('addTimeslot', form.member_1);
+    },
     addTeam: function({commit}, {form}) {
       console.log('addTeam', form.member_1, form.member_2)
 
