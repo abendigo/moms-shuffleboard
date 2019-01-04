@@ -5,10 +5,10 @@ firestore.settings(settings);
 
 export const store = new Vuex.Store({
   state: {
-    timeslots: ['13:00', '13:45', '14:30'],
+    timeslots: ['1.00 p.m', '1.45 p.m', '2.30'],
     dates: [
-      'Sep 20', 'Sep 27', 'Oct 11', 'Oct 18', 'Oct 25',
-      'Nov 01', 'Nov 08', 'Nov 15', 'Nov 22', 'Nov 27'
+      'Jan. 10th', 'Jan. 24th', 'Jan. 31st', 'Feb. 7th', 'Feb. 14th', 'Feb. 21st',
+      'Feb. 28th', 'Mar. 7th', 'Mar. 14th', 'Mar. 28th', 'April 4th'
     ],
 
     teams: [],
@@ -50,8 +50,12 @@ export const store = new Vuex.Store({
     },
     setTeams(state, teams) { state.teams = teams; },
     setSchedule(state, schedule) {
-      state.timeslots = Object.keys(schedule[Object.keys(schedule)[0]]);
-      state.dates = Object.keys(schedule);
+      console.log('schedule', schedule)
+      // state.timeslots = Object.keys(schedule[Object.keys(schedule)[0]]);
+      // state.dates = Object.keys(schedule).sort((a, b) => {
+      //   console.log('sort', a, b, moment(a).format(), moment(b).format());
+      //   return -1;
+      // });
       state.schedule = schedule;
     },
     setUser(state, user) { state.user = user; }
