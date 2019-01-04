@@ -24,6 +24,12 @@ export const Teams = {
       this.form.member_1 = '';
       this.form.member_2 = '';
     },
+    onDeleteDate: function(date) {
+      this.$store.dispatch('deleteDate', { date });
+    },
+    onDeleteTimeslot: function(timeslot) {
+      this.$store.dispatch('deleteTimeslot', { timeslot });
+    },
     onDeleteTeam: function(id) {
       console.log('onDelete', id)
 

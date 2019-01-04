@@ -29,15 +29,31 @@ export const store = new Vuex.Store({
   },
   mutations: {
     addDate(state, date) {
-      console.log('addDate', state, date);
       let xxx = [...state.dates];
       xxx.push(date);
-      console.log('xxx', xxx)
       Vue.set(state, 'dates', xxx);
     },
-    addTimeslot(state, timeslot) {state.timeslots.push[timeslot]; },
+    deleteDate(state, date) {
+      let xxx = [...state.dates];
+      xxx.splice(xxx.indexOf(date), 1);
+      Vue.set(state, 'dates', xxx);
+    },
+    addTimeslot(state, timeslot) {
+      let xxx = [...state.timeslots];
+      xxx.push(timeslot);
+      Vue.set(state, 'timeslots', xxx);
+    },
+    deleteTimeslot(state, timeslot) {
+      let xxx = [...state.timeslots];
+      xxx.splice(xxx.indexOf(timeslot), 1);
+      Vue.set(state, 'timeslots', xxx);
+    },
     setTeams(state, teams) { state.teams = teams; },
-    setSchedule(state, schedule) { state.schedule = schedule; },
+    setSchedule(state, schedule) {
+      state.timeslots = Object.keys(schedule[Object.keys(schedule)[0]]);
+      state.dates = Object.keys(schedule);
+      state.schedule = schedule;
+    },
     setUser(state, user) { state.user = user; }
   },
   actions: {
@@ -45,7 +61,7 @@ export const store = new Vuex.Store({
       console.log('addDate', form.member_1)
       commit('addDate', form.member_1);
     },
-    addTimeslot: function({}, {form}) {
+    addTimeslot: function({commit}, {form}) {
       commit('addTimeslot', form.member_1);
     },
     addTeam: function({commit}, {form}) {
@@ -59,6 +75,12 @@ export const store = new Vuex.Store({
       }, error => {
         console.log('error', error);
       });
+    },
+    deleteDate: function({commit}, {date}) {
+      commit('deleteDate', date);
+    },
+    deleteTimeslot: function({commit}, {timeslot}) {
+      commit('deleteTimeslot', timeslot);
     },
     deleteTeam: function({}, {id}) {
       firestore.collection('teams').doc(id).delete().then(() => {
